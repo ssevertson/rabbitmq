@@ -16,12 +16,13 @@
   <% if node['rabbitmq']['ssl']['use'] -%>
       ,
       {ssl, true},
-      {ssl_opts, [{cacertfile,"<%= node['rabbitmq']['ssl']['cacert'] %>"},
+      {ssl_opts, [
+        {cacertfile,"<%= node['rabbitmq']['ssl']['cacert'] %>"},
         {certfile,"<%= node['rabbitmq']['ssl']['cert'] %>"},
-        {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"}]}
-      ]
-    }
+        {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"}
+      ]}
   <% end %>
+    ]}
   ]},
 <% end %>
   {rabbit, [
