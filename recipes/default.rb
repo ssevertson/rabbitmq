@@ -165,6 +165,38 @@ template "#{node['rabbitmq']['config_root']}/rabbitmq-env.conf" do
   notifies :restart, "service[#{node['rabbitmq']['service_name']}]"
 end
 
+if node['rabbitmq']['ssl']['use']
+  # Dynamically set kernel parameter, rendered in rabbitmq.conf template
+  node.set['rabbitmq']['kernel']['inet_ssl_port'] = node['rabbitmq']['ssl']['dist']['port']
+
+  template "#{node['rabbitmq']['ssl']['erlang']['boot']}.rel" do
+    owner 'root'
+    group 'root'
+    mode 00644
+    variables(
+      :erlang_otp => node['rabbitmq']['ssl']['erlang']['otp'],
+      :erlang_release => node['rabbitmq']['ssl']['erlang']['release'],
+      :erlang_version => node['rabbitmq']['ssl']['erlang']['version'],
+      :erlang_library_versions => node['rabbitmq']['ssl']['erlang']['libraries']
+    )
+    notifies :run, 'execute[make_script]', :immediately
+  end
+  
+  execute 'make_script' do
+    command 'erl -noshell -s systools make_script "start_sasl_ssl" -s init stop'
+    cwd node['rabbitmq']['config_root']
+    notifies :run, 'execute[pkill-rabbitmq]', :delayed
+    action :nothing
+  end
+else
+  ['.rel', '.boot', '.script'].each do |ext|
+    file "#{node['rabbitmq']['ssl']['erlang']['boot']}.#{ext}" do
+      action :delete
+      notifies :run, 'execute[pkill-rabbitmq]', :delayed
+    end
+  end
+end
+
 template "#{node['rabbitmq']['config_root']}/rabbitmq.config" do
   source 'rabbitmq.config.erb'
   owner 'root'
@@ -204,4 +236,13 @@ if node['rabbitmq']['cluster'] && (node['rabbitmq']['erlang_cookie'] != existing
     command 'rabbitmqctl stop_app && rabbitmqctl reset && rabbitmqctl start_app'
     action :nothing
   end
+end
+
+execute 'pkill-rabbitmq' do
+  # Restarts do not work cleanly when switching between SSL/non-SSL Erlang distribution, or vice-versa.
+  # rabbitmqctl tries to connect with the new distribution settings to the old instance.
+  # So, when switching distribution protocols, we need to manually kill it, then start the service again.
+  command 'pkill -9 -u rabbitmq beam'
+  notifies :start, "service[#{node['rabbitmq']['service_name']}]", :delayed
+  action :nothing
 end

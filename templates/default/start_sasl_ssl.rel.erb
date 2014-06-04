@@ -1,0 +1,9 @@
+{release, {"<%= @erlang_otp %>","<%= @erlang_release %>"}, {erts, "<%= @erlang_version %>"},
+ [
+<% libraries = @erlang_library_versions.keys %>
+<% last_library = libraries.pop %>
+<% libraries.each do | library | -%>
+  {<%= library %>, "<%= @erlang_library_versions[library] %>"},
+<% end %>
+  {<%= last_library %>, "<%= @erlang_library_versions[last_library] %>"}
+]}.

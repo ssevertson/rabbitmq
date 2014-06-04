@@ -47,15 +47,34 @@ default['rabbitmq']['open_file_limit'] = nil
 default['rabbitmq']['job_control'] = 'initd'
 
 # ssl
-default['rabbitmq']['ssl'] = false
-default['rabbitmq']['ssl_port'] = 5671
-default['rabbitmq']['ssl_cacert'] = '/path/to/cacert.pem'
-default['rabbitmq']['ssl_cert'] = '/path/to/cert.pem'
-default['rabbitmq']['ssl_key'] = '/path/to/key.pem'
-default['rabbitmq']['ssl_verify'] = 'verify_none'
-default['rabbitmq']['ssl_fail_if_no_peer_cert'] = false
-default['rabbitmq']['web_console_ssl'] = false
-default['rabbitmq']['web_console_ssl_port'] = 15_671
+default['rabbitmq']['ssl']['use'] = false
+default['rabbitmq']['ssl']['only'] = true
+default['rabbitmq']['ssl']['port'] = 5_671
+default['rabbitmq']['ssl']['cacert'] = '/path/to/cacert.pem'
+default['rabbitmq']['ssl']['cert'] = '/path/to/cert.pem'
+default['rabbitmq']['ssl']['key'] = '/path/to/key.pem'
+default['rabbitmq']['ssl']['verify'] = 'verify_none'
+default['rabbitmq']['ssl']['fail_if_no_peer_cert'] = false
+default['rabbitmq']['ssl']['dist']['port'] = 4_370
+default['rabbitmq']['web_console']['use'] = true
+default['rabbitmq']['web_console']['ip'] = '0.0.0.0'
+default['rabbitmq']['web_console']['port'] = 15_671
+
+# Library versions appropriate for Ubuntu 14.04; would need to be changed for other distros/releases
+# These settings are only required to support SSL for distributed Erlang 
+default['rabbitmq']['ssl']['erlang']['boot'] = "#{node['rabbitmq']['config_root']}/start_sasl_ssl"
+default['rabbitmq']['ssl']['erlang']['version'] = '5.10.4'
+default['rabbitmq']['ssl']['erlang']['otp'] = 'OTP  APN 181 01'
+default['rabbitmq']['ssl']['erlang']['release'] = 'R16B03'
+default['rabbitmq']['ssl']['erlang']['libraries'] = {
+  'asn1'       => '2.0.4',
+  'crypto'     => '3.2',
+  'kernel'     => '2.16.4',
+  'public_key' => '0.21',
+  'sasl'       => '2.3.4',
+  'ssl'        => '5.3.2',
+  'stdlib'     => '1.19.4'
+}
 
 # tcp listen options
 default['rabbitmq']['tcp_listen_packet'] = 'raw'

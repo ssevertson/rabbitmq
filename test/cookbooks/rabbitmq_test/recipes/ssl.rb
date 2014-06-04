@@ -16,3 +16,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+user 'rabbitmq' do
+  home '/var/lib/rabbitmq'
+  system true
+  comment 'RabbitMQ messaging server'
+end
+
+group 'ssl-cert' do
+  members ['rabbitmq' ]
+  system true
+  append true
+end
+
+cookbook_file 'ca.crt' do
+  path '/usr/local/share/ca-certificates/ca.crt'
+end
+cookbook_file 'server.crt' do
+  path '/usr/local/share/ca-certificates/server.crt'
+end
+cookbook_file 'server.key' do
+  path '/etc/ssl/private/server.key'
+  group 'ssl-cert'
+  mode '0640'
+end
+
+execute '/usr/sbin/update-ca-certificates' do
+end
+
+directory '/etc/ssl/private' do
+  group 'ssl-cert'
+  mode '0750'
+end
+
+node.set['rabbitmq']['ssl']['use'] = true
+node.set['rabbitmq']['ssl']['cacert'] = '/etc/ssl/certs/ca.pem'
+node.set['rabbitmq']['ssl']['cert'] = '/etc/ssl/certs/server.pem'
+node.set['rabbitmq']['ssl']['key'] = '/etc/ssl/private/server.key'
+
+include_recipe 'rabbitmq::default'
+
