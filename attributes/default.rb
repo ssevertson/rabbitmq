@@ -55,7 +55,6 @@ default['rabbitmq']['ssl']['cert'] = '/path/to/cert.pem'
 default['rabbitmq']['ssl']['key'] = '/path/to/key.pem'
 default['rabbitmq']['ssl']['verify'] = 'verify_none'
 default['rabbitmq']['ssl']['fail_if_no_peer_cert'] = false
-default['rabbitmq']['ssl']['dist']['port'] = 4_370
 default['rabbitmq']['web_console']['use'] = true
 default['rabbitmq']['web_console']['ip'] = '0.0.0.0'
 default['rabbitmq']['web_console']['port'] = 15_671

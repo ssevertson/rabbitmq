@@ -166,9 +166,6 @@ template "#{node['rabbitmq']['config_root']}/rabbitmq-env.conf" do
 end
 
 if node['rabbitmq']['ssl']['use']
-  # Dynamically set kernel parameter, rendered in rabbitmq.conf template
-  node.set['rabbitmq']['kernel']['inet_ssl_port'] = node['rabbitmq']['ssl']['dist']['port']
-
   template "#{node['rabbitmq']['ssl']['erlang']['boot']}.rel" do
     owner 'root'
     group 'root'
