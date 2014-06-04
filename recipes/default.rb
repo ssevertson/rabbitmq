@@ -182,14 +182,14 @@ if node['rabbitmq']['ssl']['use']
   execute 'make_script' do
     command 'erl -noshell -s systools make_script "start_sasl_ssl" -s init stop'
     cwd node['rabbitmq']['config_root']
-    notifies :run, 'execute[pkill-rabbitmq]', :delayed
+    notifies :run, 'execute[pkill-rabbitmq]', :immediately
     action :nothing
   end
 else
   ['.rel', '.boot', '.script'].each do |ext|
     file "#{node['rabbitmq']['ssl']['erlang']['boot']}.#{ext}" do
       action :delete
-      notifies :run, 'execute[pkill-rabbitmq]', :delayed
+      notifies :run, 'execute[pkill-rabbitmq]', :immediately
     end
   end
 end
@@ -240,6 +240,6 @@ execute 'pkill-rabbitmq' do
   # rabbitmqctl tries to connect with the new distribution settings to the old instance.
   # So, when switching distribution protocols, we need to manually kill it, then start the service again.
   command 'pkill -9 -u rabbitmq beam'
-  notifies :start, "service[#{node['rabbitmq']['service_name']}]", :delayed
+  notifies :start, "service[#{node['rabbitmq']['service_name']}]", :immediately
   action :nothing
 end
