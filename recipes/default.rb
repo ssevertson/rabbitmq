@@ -165,34 +165,6 @@ template "#{node['rabbitmq']['config_root']}/rabbitmq-env.conf" do
   notifies :restart, "service[#{node['rabbitmq']['service_name']}]"
 end
 
-if node['rabbitmq']['ssl']['use']
-  template "#{node['rabbitmq']['ssl']['erlang']['boot']}.rel" do
-    owner 'root'
-    group 'root'
-    mode 00644
-    variables(
-      :erlang_otp => node['rabbitmq']['ssl']['erlang']['otp'],
-      :erlang_release => node['rabbitmq']['ssl']['erlang']['release'],
-      :erlang_version => node['rabbitmq']['ssl']['erlang']['version'],
-      :erlang_library_versions => node['rabbitmq']['ssl']['erlang']['libraries']
-    )
-    notifies :run, 'execute[make_script]', :immediately
-  end
-  
-  execute 'make_script' do
-    command 'erl -noshell -s systools make_script "start_sasl_ssl" -s init stop'
-    cwd node['rabbitmq']['config_root']
-    notifies :run, 'execute[pkill-rabbitmq]', :immediately
-    action :nothing
-  end
-else
-  ['.rel', '.boot', '.script'].each do |ext|
-    file "#{node['rabbitmq']['ssl']['erlang']['boot']}.#{ext}" do
-      action :delete
-      notifies :run, 'execute[pkill-rabbitmq]', :immediately
-    end
-  end
-end
 
 template "#{node['rabbitmq']['config_root']}/rabbitmq.config" do
   source 'rabbitmq.config.erb'
@@ -232,6 +204,35 @@ if node['rabbitmq']['cluster'] && (node['rabbitmq']['erlang_cookie'] != existing
   execute 'reset-node' do
     command 'rabbitmqctl stop_app && rabbitmqctl reset && rabbitmqctl start_app'
     action :nothing
+  end
+end
+
+if node['rabbitmq']['ssl']['use']
+  template "#{node['rabbitmq']['ssl']['erlang']['boot']}.rel" do
+    owner 'root'
+    group 'root'
+    mode 00644
+    variables(
+      :erlang_otp => node['rabbitmq']['ssl']['erlang']['otp'],
+      :erlang_release => node['rabbitmq']['ssl']['erlang']['release'],
+      :erlang_version => node['rabbitmq']['ssl']['erlang']['version'],
+      :erlang_library_versions => node['rabbitmq']['ssl']['erlang']['libraries']
+    )
+    notifies :run, 'execute[make_script]', :immediately
+  end
+  
+  execute 'make_script' do
+    command 'erl -noshell -s systools make_script "start_sasl_ssl" -s init stop'
+    cwd node['rabbitmq']['config_root']
+    notifies :run, 'execute[pkill-rabbitmq]', :immediately
+    action :nothing
+  end
+else
+  ['.rel', '.boot', '.script'].each do |ext|
+    file "#{node['rabbitmq']['ssl']['erlang']['boot']}.#{ext}" do
+      action :delete
+      notifies :run, 'execute[pkill-rabbitmq]', :immediately
+    end
   end
 end
 
