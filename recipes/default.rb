@@ -241,6 +241,8 @@ execute 'pkill-rabbitmq' do
   # rabbitmqctl tries to connect with the new distribution settings to the old instance.
   # So, when switching distribution protocols, we need to manually kill it, then start the service again.
   command 'pkill -9 -u rabbitmq beam'
-  notifies :start, "service[#{node['rabbitmq']['service_name']}]", :immediately
+  if node['rabbitmq']['job_control'] != 'upstart'
+    notifies :start, "service[#{node['rabbitmq']['service_name']}]", :immediately
+  end
   action :nothing
 end
