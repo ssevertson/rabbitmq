@@ -244,5 +244,15 @@ execute 'pkill-rabbitmq' do
   if node['rabbitmq']['job_control'] != 'upstart'
     notifies :start, "service[#{node['rabbitmq']['service_name']}]", :immediately
   end
+  notifies :create, 'ruby_block[sleep-after-kill]', :immediately
   action :nothing
 end
+
+ruby_block 'sleep-after-kill' do
+  block do
+    sleep 10
+  end
+  action :nothing
+end
+
+
