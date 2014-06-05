@@ -19,7 +19,12 @@
       {ssl_opts, [
         {cacertfile,"<%= node['rabbitmq']['ssl']['cacert'] %>"},
         {certfile,"<%= node['rabbitmq']['ssl']['cert'] %>"},
-        {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"}
+        {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"},
+        {ciphers, [
+          {dhe_rsa,aes_256_cbc,sha256},
+          {dhe_dss,aes_256_cbc,sha256},
+          {rsa,aes_256_cbc,sha256}
+        ]}
       ]}
   <% end %>
     ]}
@@ -32,11 +37,12 @@
 <% end %>
 <% if node['rabbitmq']['ssl']['use'] -%>
     {ssl_listeners, [<%= node['rabbitmq']['ssl']['port'] %>]},
-    {ssl_options, [{cacertfile,"<%= node['rabbitmq']['ssl']['cacert'] %>"},
-                    {certfile,"<%= node['rabbitmq']['ssl']['cert'] %>"},
-                    {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"},
-                    {verify,<%= node['rabbitmq']['ssl']['verify'] %>},
-                    {fail_if_no_peer_cert,<%= node['rabbitmq']['ssl']['fail_if_no_peer_cert'] %>}]},
+    {ssl_options, [
+      {cacertfile,"<%= node['rabbitmq']['ssl']['cacert'] %>"},
+      {certfile,"<%= node['rabbitmq']['ssl']['cert'] %>"},
+      {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"},
+      {verify,<%= node['rabbitmq']['ssl']['verify'] %>},
+      {fail_if_no_peer_cert,<%= node['rabbitmq']['ssl']['fail_if_no_peer_cert'] %>}]},
 <% end %>
 <% if node['rabbitmq']['ssl']['only'] -%>
     {tcp_listeners, []},
