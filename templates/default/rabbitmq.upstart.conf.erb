@@ -1,5 +1,5 @@
 description "Start rabbitmq on startup"
-start on started networking and remote-filesystems
+start on started networking and started remote-filesystems
 limit nofile <%= @max_file_descriptors %> <%= @max_file_descriptors %>
 
 respawn
