@@ -250,9 +250,10 @@ end
 
 ruby_block 'sleep-after-kill' do
   block do
-    sleep 20
+    sleep 10
   end
   action :nothing
+  notifies :start, "service[#{node['rabbitmq']['service_name']}]", :immediately
 end
 
 
