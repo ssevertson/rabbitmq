@@ -250,7 +250,7 @@ end
 
 ruby_block 'sleep-after-kill' do
   block do
-    sleep 10
+    sleep 20
   end
   action :nothing
 end
