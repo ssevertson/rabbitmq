@@ -21,9 +21,26 @@
         {certfile,"<%= node['rabbitmq']['ssl']['cert'] %>"},
         {keyfile,"<%= node['rabbitmq']['ssl']['key'] %>"},
         {ciphers, [
+          {ecdhe_rsa,aes_128_cbc,sha256},
+          {ecdhe_ecdsa,aes_128_cbc,sha256},
+          {ecdhe_rsa,aes_128_cbc,sha},
+          {ecdhe_ecdsa,aes_128_cbc,sha},
+          {ecdhe_rsa,aes_256_cbc,sha384},
+          {ecdhe_ecdsa,aes_256_cbc,sha384},
+          {ecdhe_rsa,aes_256_cbc,sha},
+          {ecdhe_ecdsa,aes_256_cbc,sha},
+          {dhe_rsa,aes_128_cbc,sha256},
+          {dhe_rsa,aes_128_cbc,sha},
+          {dhe_rsa,aes_256_cbc,sha256}
           {dhe_rsa,aes_256_cbc,sha},
-          {dhe_dss,aes_256_cbc,sha},
-          {rsa,aes_256_cbc,sha}
+          {ecdhe_rsa,'3des_ede_cbc',sha},
+          {ecdhe_ecdsa,'3des_ede_cbc',sha},
+          {dhe_rsa,'3des_ede_cbc',sha},
+          {rsa,aes_128_cbc,sha256},
+          {rsa,aes_256_cbc,sha},
+          {rsa,aes_128_cbc,sha},
+          {rsa,aes_256_cbc,sha256},
+          {rsa,'3des_ede_cbc',sha}
         ]}
       ]}
   <% end %>
